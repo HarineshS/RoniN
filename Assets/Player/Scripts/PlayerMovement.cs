@@ -5,7 +5,7 @@ using UnityEngine;
 public class PlayerMovement : MonoBehaviour
 {
     private Rigidbody2D rb;
-    //private Animator animator;
+    private Animator animator;
     private float horizontalMovement = 0f;
     private bool isRight;
     
@@ -15,7 +15,7 @@ public class PlayerMovement : MonoBehaviour
      void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
-       // animator = GetComponent<Animator>();
+        animator = GetComponent<Animator>();
     }
 
     // Start is called before the first frame update
@@ -28,7 +28,7 @@ public class PlayerMovement : MonoBehaviour
     void Update()
     {
         horizontalMovement = Input.GetAxisRaw("Horizontal");
-        //animator.SetFloat("speed", Mathf.Abs(horizontalMovement));
+        animator.SetFloat("speed", Mathf.Abs(horizontalMovement));
     }
     
     void FixedUpdate()
@@ -42,15 +42,13 @@ public class PlayerMovement : MonoBehaviour
         {
             transform.localScale = new Vector3(.25f,.25f,1);
             isRight = false;
-            Debug.Log("right");
         }
         else if(!isRight && horizontalMovement < 0f)
         {
             transform.localScale = new Vector3(-.25f,.25f,1);
             isRight = true;
-            Debug.Log("Left");
         }
-        if (Input.GetButtonDown("Jump") && Mathf.Abs(rb.velocity.y) < 0.01f) 
+        if (Input.GetButtonDown("Jump") && Mathf.Abs(rb.velocity.y) < Mathf.Epsilon) 
         {
             rb.AddForce(new Vector2(0, jumpForce), ForceMode2D.Impulse);   
         }
