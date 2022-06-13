@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -8,12 +9,14 @@ public class PlayerMovement : MonoBehaviour
     private Animator animator;
     private float horizontalMovement = 0f;
     private bool isRight;
+    private bool isGround;
     
     public float speed = 5f;
     public float jumpForce=7f;
 
      void Awake()
     {
+        isGround = true;
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
     }
@@ -33,9 +36,10 @@ public class PlayerMovement : MonoBehaviour
     
     void FixedUpdate()
     {
-        Movement();   
+        KeyboardMovement();  
+        //JoystickMovement(); 
     }
-    void Movement()
+    void KeyboardMovement()
     {
         transform.position += new Vector3(horizontalMovement, 0,0) * speed * Time.deltaTime;
         if(isRight && horizontalMovement > 0f)
@@ -50,7 +54,20 @@ public class PlayerMovement : MonoBehaviour
         }
         if (Input.GetButtonDown("Jump") && Mathf.Abs(rb.velocity.y) < Mathf.Epsilon) 
         {
+            isGround = false;
+            animator.SetBool("isJumping",true);
             rb.AddForce(new Vector2(0, jumpForce), ForceMode2D.Impulse);   
+        }
+    }
+
+    
+
+    void OnCollisionEnter2D(Collision2D other) 
+    {
+        if(other.gameObject.tag == "Platform")
+        {
+            isGround = true;
+            animator.SetBool("isJumping",false);
         }
     }
 }
