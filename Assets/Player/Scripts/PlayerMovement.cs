@@ -13,6 +13,7 @@ public class PlayerMovement : MonoBehaviour
     
     public float speed = 5f;
     public float jumpForce=7f;
+    public Joystick joystick;
 
      void Awake()
     {
@@ -37,7 +38,7 @@ public class PlayerMovement : MonoBehaviour
     void FixedUpdate()
     {
         KeyboardMovement();  
-        //JoystickMovement(); 
+        JoystickMovement(); 
     }
     void KeyboardMovement()
     {
@@ -60,6 +61,22 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    void JoystickMovement()
+    {
+        float joystickDirection = joystick.Horizontal;
+        gameObject.transform.Translate(new Vector3(joystickDirection,0,0) * speed * Time.deltaTime);
+        animator.SetFloat("Speed", Mathf.Abs(joystickDirection));
+        if(isRight && joystickDirection > 0f)
+        {
+            transform.localScale = new Vector3(1,1,1);
+            isRight = false;
+        }
+        else if(!isRight && joystickDirection < 0f)
+        {
+            transform.localScale = new Vector3(-1,1,1);
+            isRight = true;
+        }
+    }
     
 
     void OnCollisionEnter2D(Collision2D other) 
