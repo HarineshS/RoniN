@@ -10,10 +10,13 @@ public class PlayerMovement : MonoBehaviour
     private float horizontalMovement = 0f;
     private bool isRight;
     private bool isGround;
+    private bool isKatana;
     
     public float speed = 5f;
     public float jumpForce=7f;
     public Joystick joystick;
+    public int damage;
+
 
      void Awake()
     {
@@ -38,7 +41,7 @@ public class PlayerMovement : MonoBehaviour
     void FixedUpdate()
     {
         KeyboardMovement();  
-        JoystickMovement(); 
+        //JoystickMovement(); 
     }
     void KeyboardMovement()
     {
@@ -53,30 +56,44 @@ public class PlayerMovement : MonoBehaviour
             transform.localScale = new Vector3(-.25f,.25f,1);
             isRight = true;
         }
+
+        //Jump
         if (Input.GetButtonDown("Jump") && Mathf.Abs(rb.velocity.y) < Mathf.Epsilon) 
         {
             isGround = false;
             animator.SetBool("isJumping",true);
             rb.AddForce(new Vector2(0, jumpForce), ForceMode2D.Impulse);   
         }
+
+        //Attack
+        if (Input.GetButtonDown("Fire1"))
+        {
+            isKatana = true;
+            StartCoroutine(Attack(isKatana));
+        }
+        if (Input.GetButtonDown("Fire2"))
+        {
+            isKatana = false;
+            StartCoroutine(Attack(isKatana));
+        }
     }
 
-    void JoystickMovement()
-    {
-        float joystickDirection = joystick.Horizontal;
-        gameObject.transform.Translate(new Vector3(joystickDirection,0,0) * speed * Time.deltaTime);
-        animator.SetFloat("Speed", Mathf.Abs(joystickDirection));
-        if(isRight && joystickDirection > 0f)
-        {
-            transform.localScale = new Vector3(1,1,1);
-            isRight = false;
-        }
-        else if(!isRight && joystickDirection < 0f)
-        {
-            transform.localScale = new Vector3(-1,1,1);
-            isRight = true;
-        }
-    }
+    // void JoystickMovement()
+    // {
+    //     float joystickDirection = joystick.Horizontal;
+    //     gameObject.transform.Translate(new Vector3(joystickDirection,0,0) * speed * Time.deltaTime);
+    //     animator.SetFloat("Speed", Mathf.Abs(joystickDirection));
+    //     if(isRight && joystickDirection > 0f)
+    //     {
+    //         transform.localScale = new Vector3(1,1,1);
+    //         isRight = false;
+    //     }
+    //     else if(!isRight && joystickDirection < 0f)
+    //     {
+    //         transform.localScale = new Vector3(-1,1,1);
+    //         isRight = true;
+    //     }
+    // }
     
 
     void OnCollisionEnter2D(Collision2D other) 
@@ -85,6 +102,21 @@ public class PlayerMovement : MonoBehaviour
         {
             isGround = true;
             animator.SetBool("isJumping",false);
+        }
+    }
+
+    IEnumerator Attack(bool isKatana)
+    {
+        if(isKatana)
+        {
+            animator.SetBool("katana",true);
+            yield return new WaitForSeconds(0.25f);
+            animator.SetBool("katana",false);
+        }
+        if(!isKatana)
+        {
+            animator.SetBool("shuriken",true);
+            damage = 50;
         }
     }
 }
