@@ -11,6 +11,7 @@ public class PlayerMovement : MonoBehaviour
     private bool isRight;
     private bool isGround;
     private bool isKatana;
+    public static bool isPaused;
     
     public float speed = 5f;
     public float jumpForce=7f;
@@ -23,6 +24,7 @@ public class PlayerMovement : MonoBehaviour
         isGround = true;
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
+        isPaused= false;
     }
 
     // Start is called before the first frame update
@@ -75,6 +77,20 @@ public class PlayerMovement : MonoBehaviour
         {
             isKatana = false;
             StartCoroutine(Attack(isKatana));
+        }
+
+        //pause
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+            isPaused=true;
+            if (isPaused)
+            {
+                isPaused = false;
+            }
+            else if (!isPaused)
+            {
+                isPaused = true;
+            }
         }
     }
 
