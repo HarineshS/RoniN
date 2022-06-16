@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -12,6 +13,19 @@ public class PlayerMovement : MonoBehaviour
     private bool isGround;
     private bool isKatana;
     public static bool isPaused;
+
+    //shoot
+    public Transform shootPoint;
+    public float Force;
+    public GameObject shuriken;
+    public Vector2 Direction;
+    public Transform Target;
+    public float range;
+    private bool Detected;
+    private float castDist;
+    private float fix;
+
+    
     
     public float speed = 5f;
     public float jumpForce=7f;
@@ -38,12 +52,16 @@ public class PlayerMovement : MonoBehaviour
     {
         horizontalMovement = Input.GetAxisRaw("Horizontal");
         animator.SetFloat("speed", Mathf.Abs(horizontalMovement));
+
+        Vector2 targetPos = new Vector2(transform.position.x + fix , shootPoint.transform.position.y);
+        Direction = targetPos - (Vector2)transform.position;
     }
     
     void FixedUpdate()
     {
         KeyboardMovement();  
         //JoystickMovement(); 
+        SomeRaycastThing();
     }
     void KeyboardMovement()
     {
@@ -52,11 +70,13 @@ public class PlayerMovement : MonoBehaviour
         {
             transform.localScale = new Vector3(.25f,.25f,1);
             isRight = false;
+            fix = 2;
         }
         else if(!isRight && horizontalMovement < 0f)
         {
             transform.localScale = new Vector3(-.25f,.25f,1);
             isRight = true;
+            fix = -2;
         }
 
         //Jump
@@ -132,7 +152,50 @@ public class PlayerMovement : MonoBehaviour
         if(!isKatana)
         {
             animator.SetBool("shuriken",true);
+            yield return new WaitForSeconds(0.25f);
+            animator.SetBool("shuriken",false);
             damage = 50;
+            shoot();
         }
+    }
+    
+    void SomeRaycastThing()
+    {
+        castDist = -range;
+        if(!isRight)
+        {
+            castDist = range;
+        }
+        Vector2 endPos = shootPoint.position + Vector3.right * castDist;
+
+        RaycastHit2D hit = Physics2D.Linecast(shootPoint.position, endPos);
+
+        if(hit.collider !=null)
+        {
+            Debug.Log("something hit");
+            Debug.Log(hit.collider.name);
+
+            if(hit.collider.gameObject.CompareTag("Enemy"))
+            {
+                Debug.DrawLine(shootPoint.position, hit.point,Color.red);
+                Debug.Log("ray hit player");
+                Vector2 targetPos = Target.position;
+                Direction = targetPos - (Vector2)transform.position;
+            }
+            else
+            {
+                 Debug.DrawLine(shootPoint.position, endPos,Color.green);
+            }
+        }
+        else
+        {
+            Debug.DrawLine(shootPoint.position,endPos,Color.blue);
+        }
+    }
+
+    void shoot()
+    {
+        GameObject ShurikenIns = Instantiate(shuriken, shootPoint.position, Quaternion.identity);
+        ShurikenIns.GetComponent<Rigidbody2D>().AddForce(Direction * Force);
     }
 }

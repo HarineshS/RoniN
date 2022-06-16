@@ -1,25 +1,25 @@
 fileFormatVersion: 2
-guid: 7928660d400a8b04cb9e8c948e5d8216
+guid: af940b6047226ba4086cd6744348e145
 TextureImporter:
   internalIDToNameTable:
   - first:
-      213: 2480443528530159841
-    second: attack_sprite_0
+      213: -709452412644527934
+    second: shuriken_sprite_0
   - first:
-      213: -6703798474304641614
-    second: attack_sprite_1
+      213: 7503514544403075495
+    second: shuriken_sprite_1
   - first:
-      213: 8815950625819070681
-    second: attack_sprite_2
+      213: -2973964434409270869
+    second: shuriken_sprite_2
   - first:
-      213: -1588934402718568930
-    second: attack_sprite_3
+      213: 8132354405818497553
+    second: shuriken_sprite_3
   externalObjects: {}
   serializedVersion: 11
   mipmaps:
     mipMapMode: 0
     enableMipMap: 0
-    sRGBTexture: 1
+    sRGBTexture: 0
     linearTexture: 0
     fadeOut: 0
     borderMipMap: 0
@@ -73,7 +73,7 @@ TextureImporter:
   platformSettings:
   - serializedVersion: 3
     buildTarget: DefaultTexturePlatform
-    maxTextureSize: 1024
+    maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 1
@@ -85,7 +85,7 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 3
     buildTarget: Standalone
-    maxTextureSize: 1024
+    maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 1
@@ -97,7 +97,7 @@ TextureImporter:
     forceMaximumCompressionQuality_BC6H_BC7: 0
   - serializedVersion: 3
     buildTarget: Android
-    maxTextureSize: 1024
+    maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
     textureCompression: 1
@@ -111,13 +111,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: attack_sprite_0
+      name: shuriken_sprite_0
       rect:
         serializedVersion: 2
-        x: 94
-        y: 0
-        width: 115
-        height: 189
+        x: 18
+        y: 19
+        width: 143
+        height: 131
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -125,20 +125,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 1e8e47b4f3e4c6220800000000000000
-      internalID: 2480443528530159841
+      spriteID: 2c0774f1ac48726f0800000000000000
+      internalID: -709452412644527934
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: attack_sprite_1
+      name: shuriken_sprite_1
       rect:
         serializedVersion: 2
-        x: 265
-        y: 0
-        width: 196
-        height: 189
+        x: 189
+        y: 19
+        width: 123
+        height: 131
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -146,20 +146,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 2b5244d4ec257f2a0800000000000000
-      internalID: -6703798474304641614
+      spriteID: 7a15f1a09b6d12860800000000000000
+      internalID: 7503514544403075495
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: attack_sprite_2
+      name: shuriken_sprite_2
       rect:
         serializedVersion: 2
-        x: 509
-        y: 0
-        width: 200
-        height: 189
+        x: 356
+        y: 5
+        width: 124
+        height: 140
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -167,20 +167,20 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 9d01451a26c885a70800000000000000
-      internalID: 8815950625819070681
+      spriteID: ba1d3688a1b5ab6d0800000000000000
+      internalID: -2973964434409270869
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: attack_sprite_3
+      name: shuriken_sprite_3
       rect:
         serializedVersion: 2
-        x: 760
-        y: 0
-        width: 194
-        height: 189
+        x: 525
+        y: 16
+        width: 104
+        height: 134
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -188,8 +188,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e1eef8a4498f2f9e0800000000000000
-      internalID: -1588934402718568930
+      spriteID: 11af46abe3debd070800000000000000
+      internalID: 8132354405818497553
       vertices: []
       indices: 
       edges: []
