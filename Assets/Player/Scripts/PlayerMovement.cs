@@ -1,5 +1,4 @@
-﻿
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -12,7 +11,6 @@ public class PlayerMovement : MonoBehaviour
     private bool isRight;
     private bool isGround;
     private bool isKatana;
-    public static bool isPaused;
 
     //shoot
     public Transform shootPoint;
@@ -20,31 +18,30 @@ public class PlayerMovement : MonoBehaviour
     public GameObject shuriken;
     public Vector2 Direction;
     public Transform Target;
-    public float range;
     private bool Detected;
     private float castDist;
     private float fix;
 
-    
-    
     public float speed = 5f;
     public float jumpForce=7f;
     public Joystick joystick;
-    public int damage;
 
+    //melee
+    private float timeBWAttack;
+    public float startTimeBWAttack;
+    public Transform attackPos;
+    public float attackRange;
+    public LayerMask enemyMask;
+    public int damage;
 
      void Awake()
     {
         isGround = true;
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
-        isPaused= false;
-    }
-
-    // Start is called before the first frame update
-    void Start()
-    {
-      
+        fix = 2;
+        Vector2 targetPos = new Vector2(transform.position.x + fix , shootPoint.transform.position.y);
+        Direction = targetPos - (Vector2)transform.position;
     }
 
     // Update is called once per frame
@@ -56,12 +53,17 @@ public class PlayerMovement : MonoBehaviour
         Vector2 targetPos = new Vector2(transform.position.x + fix , shootPoint.transform.position.y);
         Direction = targetPos - (Vector2)transform.position;
     }
+    void OnDrawGizmosSelected() 
+    {
+        Gizmos.color = Color.blue;
+        Gizmos.DrawWireSphere(attackPos.position, attackRange);   
+    }
     
     void FixedUpdate()
     {
         KeyboardMovement();  
         //JoystickMovement(); 
-        SomeRaycastThing();
+        //SomeRaycastThing();
     }
     void KeyboardMovement()
     {
@@ -82,7 +84,6 @@ public class PlayerMovement : MonoBehaviour
         //Jump
         if (Input.GetButtonDown("Jump") && Mathf.Abs(rb.velocity.y) < Mathf.Epsilon) 
         {
-            isGround = false;
             animator.SetBool("isJumping",true);
             rb.AddForce(new Vector2(0, jumpForce), ForceMode2D.Impulse);   
         }
@@ -90,29 +91,29 @@ public class PlayerMovement : MonoBehaviour
         //Attack
         if (Input.GetButtonDown("Fire1"))
         {
+            TimeBWAttack();
             isKatana = true;
             StartCoroutine(Attack(isKatana));
         }
         if (Input.GetButtonDown("Fire2"))
         {
+            TimeBWAttack();
             isKatana = false;
             StartCoroutine(Attack(isKatana));
         }
-
-        //pause
-        if (Input.GetKeyDown(KeyCode.P))
-        {
-            isPaused=true;
-            if (isPaused)
-            {
-                isPaused = false;
-            }
-            else if (!isPaused)
-            {
-                isPaused = true;
-            }
-        }
     }
+
+    void TimeBWAttack()
+    {
+        if(timeBWAttack <=0)
+        {
+            timeBWAttack = startTimeBWAttack;
+        }
+        else
+        {
+            timeBWAttack -= Time.deltaTime;
+        }
+    } 
 
     // void JoystickMovement()
     // {
@@ -136,7 +137,6 @@ public class PlayerMovement : MonoBehaviour
     {
         if(other.gameObject.tag == "Platform")
         {
-            isGround = true;
             animator.SetBool("isJumping",false);
         }
     }
@@ -148,54 +148,30 @@ public class PlayerMovement : MonoBehaviour
             animator.SetBool("katana",true);
             yield return new WaitForSeconds(0.25f);
             animator.SetBool("katana",false);
+            damage = 100;
+            Melee(damage);
         }
         if(!isKatana)
         {
             animator.SetBool("shuriken",true);
             yield return new WaitForSeconds(0.25f);
             animator.SetBool("shuriken",false);
-            damage = 50;
             shoot();
         }
     }
     
-    void SomeRaycastThing()
-    {
-        castDist = -range;
-        if(!isRight)
-        {
-            castDist = range;
-        }
-        Vector2 endPos = shootPoint.position + Vector3.right * castDist;
-
-        RaycastHit2D hit = Physics2D.Linecast(shootPoint.position, endPos);
-
-        if(hit.collider !=null)
-        {
-            Debug.Log("something hit");
-            Debug.Log(hit.collider.name);
-
-            if(hit.collider.gameObject.CompareTag("Enemy"))
-            {
-                Debug.DrawLine(shootPoint.position, hit.point,Color.red);
-                Debug.Log("ray hit player");
-                Vector2 targetPos = Target.position;
-                Direction = targetPos - (Vector2)transform.position;
-            }
-            else
-            {
-                 Debug.DrawLine(shootPoint.position, endPos,Color.green);
-            }
-        }
-        else
-        {
-            Debug.DrawLine(shootPoint.position,endPos,Color.blue);
-        }
-    }
-
     void shoot()
     {
         GameObject ShurikenIns = Instantiate(shuriken, shootPoint.position, Quaternion.identity);
         ShurikenIns.GetComponent<Rigidbody2D>().AddForce(Direction * Force);
+    }
+
+    void Melee(int damage)
+    {
+        Collider2D[] enemiesToDamage = Physics2D.OverlapCircleAll(attackPos.position, attackRange,enemyMask);
+        for (int i =0; i< enemiesToDamage.Length; i++)
+        {
+            enemiesToDamage[i].GetComponent<Dummy>().TakeDamage(damage);
+        }
     }
 }
