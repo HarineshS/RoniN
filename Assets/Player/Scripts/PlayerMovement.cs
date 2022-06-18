@@ -165,7 +165,7 @@ public class PlayerMovement : MonoBehaviour
     IEnumerator Death()
     {
         animator.SetTrigger("death");
-        yield return new WaitForSeconds(3);
+        yield return new WaitForSeconds(1.5f);
         Destroy(gameObject);
         SceneManager.LoadScene(0);
     }
