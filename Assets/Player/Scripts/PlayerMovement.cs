@@ -9,7 +9,6 @@ public class PlayerMovement : MonoBehaviour
     private Animator animator;
     private float horizontalMovement = 0f;
     private bool isRight;
-    private bool isGround;
     private bool isKatana;
 
     //shoot
@@ -36,11 +35,10 @@ public class PlayerMovement : MonoBehaviour
 
      void Awake()
     {
-        isGround = true;
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
-        fix = 2;
-        Vector2 targetPos = new Vector2(transform.position.x + fix , shootPoint.transform.position.y);
+        fix = 5;
+        Vector2 targetPos = new Vector2(shootPoint.transform.position.x + fix , shootPoint.transform.position.y);
         Direction = targetPos - (Vector2)transform.position;
     }
 
@@ -49,8 +47,7 @@ public class PlayerMovement : MonoBehaviour
     {
         horizontalMovement = Input.GetAxisRaw("Horizontal");
         animator.SetFloat("speed", Mathf.Abs(horizontalMovement));
-
-        Vector2 targetPos = new Vector2(transform.position.x + fix , shootPoint.transform.position.y);
+        Vector2 targetPos = new Vector2(shootPoint.transform.position.x + fix , shootPoint.transform.position.y);
         Direction = targetPos - (Vector2)transform.position;
     }
     void OnDrawGizmosSelected() 
@@ -62,23 +59,23 @@ public class PlayerMovement : MonoBehaviour
     void FixedUpdate()
     {
         KeyboardMovement();  
-        //JoystickMovement(); 
-        //SomeRaycastThing();
     }
     void KeyboardMovement()
     {
         transform.position += new Vector3(horizontalMovement, 0,0) * speed * Time.deltaTime;
         if(isRight && horizontalMovement > 0f)
         {
-            transform.localScale = new Vector3(.25f,.25f,1);
+            transform.localScale= new Vector2(transform.localScale.x*-1,transform.localScale.y);
+            //transform.localScale = new Vector3(.25f,.25f,1);
             isRight = false;
-            fix = 2;
+            fix = 5;
         }
         else if(!isRight && horizontalMovement < 0f)
         {
-            transform.localScale = new Vector3(-.25f,.25f,1);
+            transform.localScale= new Vector2(transform.localScale.x*-1,transform.localScale.y);
+            //transform.localScale = new Vector3(-.25f,.25f,1);
             isRight = true;
-            fix = -2;
+            fix = -5;
         }
 
         //Jump
@@ -114,30 +111,20 @@ public class PlayerMovement : MonoBehaviour
             timeBWAttack -= Time.deltaTime;
         }
     } 
-
-    // void JoystickMovement()
-    // {
-    //     float joystickDirection = joystick.Horizontal;
-    //     gameObject.transform.Translate(new Vector3(joystickDirection,0,0) * speed * Time.deltaTime);
-    //     animator.SetFloat("Speed", Mathf.Abs(joystickDirection));
-    //     if(isRight && joystickDirection > 0f)
-    //     {
-    //         transform.localScale = new Vector3(1,1,1);
-    //         isRight = false;
-    //     }
-    //     else if(!isRight && joystickDirection < 0f)
-    //     {
-    //         transform.localScale = new Vector3(-1,1,1);
-    //         isRight = true;
-    //     }
-    // }
-    
-
     void OnCollisionEnter2D(Collision2D other) 
     {
         if(other.gameObject.tag == "Platform")
         {
             animator.SetBool("isJumping",false);
+        }
+        if(other.gameObject.tag == "Enemy")
+        {
+            StartCoroutine(Death());
+        }
+        if(other.gameObject.tag == "FallEdge")
+        {
+            Debug.Log("You Died!!");
+            StartCoroutine(Death());
         }
     }
 
@@ -173,5 +160,13 @@ public class PlayerMovement : MonoBehaviour
         {
             enemiesToDamage[i].GetComponent<Dummy>().TakeDamage(damage);
         }
+    }
+
+    IEnumerator Death()
+    {
+        animator.SetTrigger("death");
+        yield return new WaitForSeconds(3);
+        Destroy(gameObject);
+        SceneManager.LoadScene(0);
     }
 }

@@ -9,6 +9,7 @@ TagManager:
   - Shuriken
   - Undefined
   - Katana
+  - FallEdge
   layers:
   - Default
   - TransparentFX
