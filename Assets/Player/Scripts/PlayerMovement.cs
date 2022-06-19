@@ -23,7 +23,6 @@ public class PlayerMovement : MonoBehaviour
 
     public float speed = 5f;
     public float jumpForce=7f;
-    public Joystick joystick;
 
     //melee
     private float timeBWAttack;
