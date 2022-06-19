@@ -6,6 +6,7 @@ using UnityEngine.SceneManagement;
 public class UIManager : MonoBehaviour
 {
     public GameObject pauseMenu;
+    public GameObject controls;
     bool isPaused;
 
     void Update()
@@ -19,6 +20,17 @@ public class UIManager : MonoBehaviour
     public void OnClickPlayButton()
     {
         SceneManager.LoadScene(1);
+    }
+
+    public void OpenControls()
+    {
+        controls.SetActive(true);
+    }
+
+     public void CloseControls()
+    {
+        Time.timeScale = 1;
+        controls.SetActive(false);
     }
 
     public void OnClickExitButton()
