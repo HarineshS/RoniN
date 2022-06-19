@@ -33,6 +33,11 @@ public class PlayerMovement : MonoBehaviour
     public LayerMask enemyMask;
     public int damage;
 
+    //health
+    public int maxHealth = 100;
+    public int currentHealth;
+    public HealthBar healthBar;
+
      void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -40,6 +45,11 @@ public class PlayerMovement : MonoBehaviour
         fix = 5;
         Vector2 targetPos = new Vector2(shootPoint.transform.position.x + fix , shootPoint.transform.position.y);
         Direction = targetPos - (Vector2)transform.position;
+    }
+    void Start()
+    {
+        currentHealth = maxHealth;
+        healthBar.SetMaxHealth(maxHealth);
     }
 
     // Update is called once per frame
@@ -119,7 +129,9 @@ public class PlayerMovement : MonoBehaviour
         }
         if(other.gameObject.tag == "Enemy")
         {
-            StartCoroutine(Death());
+            //StartCoroutine(Death());
+            damage = 20;
+            TakeDamage(damage);
         }
         if(other.gameObject.tag == "FallEdge")
         {
@@ -168,5 +180,16 @@ public class PlayerMovement : MonoBehaviour
         yield return new WaitForSeconds(1.5f);
         Destroy(gameObject);
         SceneManager.LoadScene(0);
+    }
+
+    void TakeDamage(int damage)
+    {
+        currentHealth -= damage;
+        healthBar.SetHealth(currentHealth);
+
+        if(currentHealth == 0)
+        {
+            StartCoroutine(Death());
+        }
     }
 }

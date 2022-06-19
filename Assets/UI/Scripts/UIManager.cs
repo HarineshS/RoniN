@@ -1,5 +1,4 @@
-﻿using System.Threading;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -8,7 +7,14 @@ public class UIManager : MonoBehaviour
 {
     public GameObject pauseMenu;
     bool isPaused;
-    
+
+    void Update()
+    {
+        if(Input.GetButtonDown("Cancel"))
+        {
+            OnClickPauseButton();
+        }
+    }
 
     public void OnClickPlayButton()
     {
@@ -25,7 +31,7 @@ public class UIManager : MonoBehaviour
 
     }
 
-    public void OnClickPauseButton()
+    void OnClickPauseButton()
     {
         pauseMenu.SetActive(true);
         Time.timeScale = 0;
