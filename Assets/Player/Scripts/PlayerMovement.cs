@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -38,6 +39,8 @@ public class PlayerMovement : MonoBehaviour
     private int maxHealth = 100;
     public int currentHealth;
     public HealthBar healthBar;
+    private int healthIncreased = 1;
+    private int healthInterval = 5;
 
      void Awake()
     {
@@ -59,6 +62,7 @@ public class PlayerMovement : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        healthBar.SetHealth(currentHealth);
         horizontalMovement = Input.GetAxisRaw("Horizontal");
         animator.SetFloat("speed", Mathf.Abs(horizontalMovement));
         Vector2 targetPos = new Vector2(shootPoint.transform.position.x + fix , shootPoint.transform.position.y);
@@ -122,10 +126,10 @@ public class PlayerMovement : MonoBehaviour
         if(other.gameObject.tag == "Platform")
         {
             animator.SetBool("isJumping",false);
+            StartCoroutine(Health());
         }
         if(other.gameObject.tag == "Enemy")
         {
-            //StartCoroutine(Death());
             damage = 20;
             TakeDamage(damage);
         }
@@ -197,11 +201,39 @@ public class PlayerMovement : MonoBehaviour
     void TakeDamage(int damage)
     {
         currentHealth -= damage;
-        healthBar.SetHealth(currentHealth);
+       // healthBar.SetHealth(currentHealth);
 
-        if(currentHealth == 0)
+        if(currentHealth <= 0)
         {
             StartCoroutine(Death());
+        }
+    }
+
+    void HealthRegeneration()
+    {
+        currentHealth += healthIncreased;
+        Debug.Log(currentHealth);
+
+        if (currentHealth > maxHealth)
+        {
+            currentHealth = maxHealth;
+        }
+    
+        if (currentHealth < 0)
+        {
+            currentHealth = 0;
+        }
+    }
+
+    IEnumerator Health()
+    {
+        yield return new WaitForSeconds(2);
+        if(currentHealth > 0)
+        {
+            for(int i = 0; i < healthInterval; i++) 
+            {
+                HealthRegeneration();
+            }
         }
     }
 }
