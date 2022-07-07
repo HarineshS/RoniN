@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -20,18 +21,26 @@ public class PlayerMovement : MonoBehaviour
     private bool Detected;
     private float castDist;
     private float fix;
+    public int currentCount;
+    private int count = 5;
+    public ShurikenCount shurikenCount;
 
     public float speed = 5f;
     public float jumpForce=7f;
-    public Joystick joystick;
+    public UIManager ui;
 
     //melee
-    private float timeBWAttack;
-    public float startTimeBWAttack;
     public Transform attackPos;
     public float attackRange;
     public LayerMask enemyMask;
     public int damage;
+
+    //health
+    private int maxHealth = 100;
+    public int currentHealth;
+    public HealthBar healthBar;
+    private int healthIncreased = 1;
+    private int healthInterval = 5;
 
      void Awake()
     {
@@ -41,10 +50,19 @@ public class PlayerMovement : MonoBehaviour
         Vector2 targetPos = new Vector2(shootPoint.transform.position.x + fix , shootPoint.transform.position.y);
         Direction = targetPos - (Vector2)transform.position;
     }
+    void Start()
+    {
+        currentCount = count;
+        currentHealth = maxHealth;
+        healthBar.SetMaxHealth(currentHealth);
+        shurikenCount.SetCount(currentCount);
+        ui.OpenControls();
+    }
 
     // Update is called once per frame
     void Update()
     {
+        healthBar.SetHealth(currentHealth);
         horizontalMovement = Input.GetAxisRaw("Horizontal");
         animator.SetFloat("speed", Mathf.Abs(horizontalMovement));
         Vector2 targetPos = new Vector2(shootPoint.transform.position.x + fix , shootPoint.transform.position.y);
@@ -59,6 +77,7 @@ public class PlayerMovement : MonoBehaviour
     void FixedUpdate()
     {
         KeyboardMovement();  
+        shurikenCount.SetCount(currentCount);
     }
     void KeyboardMovement()
     {
@@ -66,14 +85,13 @@ public class PlayerMovement : MonoBehaviour
         if(isRight && horizontalMovement > 0f)
         {
             transform.localScale= new Vector2(transform.localScale.x*-1,transform.localScale.y);
-            //transform.localScale = new Vector3(.25f,.25f,1);
             isRight = false;
             fix = 5;
         }
         else if(!isRight && horizontalMovement < 0f)
         {
             transform.localScale= new Vector2(transform.localScale.x*-1,transform.localScale.y);
-            //transform.localScale = new Vector3(-.25f,.25f,1);
+
             isRight = true;
             fix = -5;
         }
@@ -88,43 +106,44 @@ public class PlayerMovement : MonoBehaviour
         //Attack
         if (Input.GetButtonDown("Fire1"))
         {
-            TimeBWAttack();
             isKatana = true;
             StartCoroutine(Attack(isKatana));
         }
         if (Input.GetButtonDown("Fire2"))
         {
-            TimeBWAttack();
             isKatana = false;
             StartCoroutine(Attack(isKatana));
         }
+
+        if(Input.anyKey)
+        {
+           ui.CloseControls(); 
+        }
     }
 
-    void TimeBWAttack()
-    {
-        if(timeBWAttack <=0)
-        {
-            timeBWAttack = startTimeBWAttack;
-        }
-        else
-        {
-            timeBWAttack -= Time.deltaTime;
-        }
-    } 
     void OnCollisionEnter2D(Collision2D other) 
     {
         if(other.gameObject.tag == "Platform")
         {
             animator.SetBool("isJumping",false);
+            StartCoroutine(Health());
         }
         if(other.gameObject.tag == "Enemy")
         {
-            StartCoroutine(Death());
+            damage = 20;
+            TakeDamage(damage);
         }
         if(other.gameObject.tag == "FallEdge")
         {
             Debug.Log("You Died!!");
             StartCoroutine(Death());
+        }
+        if(other.gameObject.tag == "Shuriken")
+        {
+            if(currentCount<5)
+            {
+                currentCount += 1;
+            }
         }
     }
 
@@ -135,7 +154,7 @@ public class PlayerMovement : MonoBehaviour
             animator.SetBool("katana",true);
             yield return new WaitForSeconds(0.25f);
             animator.SetBool("katana",false);
-            damage = 100;
+            damage = 50;
             Melee(damage);
         }
         if(!isKatana)
@@ -143,14 +162,23 @@ public class PlayerMovement : MonoBehaviour
             animator.SetBool("shuriken",true);
             yield return new WaitForSeconds(0.25f);
             animator.SetBool("shuriken",false);
-            shoot();
+            Shoot(currentCount);
         }
     }
-    
-    void shoot()
+
+    public void Shoot(int Count)
     {
-        GameObject ShurikenIns = Instantiate(shuriken, shootPoint.position, Quaternion.identity);
-        ShurikenIns.GetComponent<Rigidbody2D>().AddForce(Direction * Force);
+        if(Count > 0)
+        {
+            GameObject ShurikenIns = Instantiate(shuriken, shootPoint.position, Quaternion.identity);
+            ShurikenIns.GetComponent<Rigidbody2D>().AddForce(Direction * Force);
+            Count-- ;
+            currentCount = Count;            
+        }
+        if(currentCount <=0)
+        {
+           Debug.LogWarning("NO Shurikens Left!!");
+        }
     }
 
     void Melee(int damage)
@@ -168,5 +196,44 @@ public class PlayerMovement : MonoBehaviour
         yield return new WaitForSeconds(1.5f);
         Destroy(gameObject);
         SceneManager.LoadScene(0);
+    }
+
+    void TakeDamage(int damage)
+    {
+        currentHealth -= damage;
+       // healthBar.SetHealth(currentHealth);
+
+        if(currentHealth <= 0)
+        {
+            StartCoroutine(Death());
+        }
+    }
+
+    void HealthRegeneration()
+    {
+        currentHealth += healthIncreased;
+        Debug.Log(currentHealth);
+
+        if (currentHealth > maxHealth)
+        {
+            currentHealth = maxHealth;
+        }
+    
+        if (currentHealth < 0)
+        {
+            currentHealth = 0;
+        }
+    }
+
+    IEnumerator Health()
+    {
+        yield return new WaitForSeconds(2);
+        if(currentHealth > 0)
+        {
+            for(int i = 0; i < healthInterval; i++) 
+            {
+                HealthRegeneration();
+            }
+        }
     }
 }

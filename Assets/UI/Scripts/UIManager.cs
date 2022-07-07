@@ -1,5 +1,4 @@
-﻿using System.Threading;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -7,12 +6,31 @@ using UnityEngine.SceneManagement;
 public class UIManager : MonoBehaviour
 {
     public GameObject pauseMenu;
+    public GameObject controls;
     bool isPaused;
-    
+
+    void Update()
+    {
+        if(Input.GetButtonDown("Cancel"))
+        {
+            OnClickPauseButton();
+        }
+    }
 
     public void OnClickPlayButton()
     {
         SceneManager.LoadScene(1);
+    }
+
+    public void OpenControls()
+    {
+        controls.SetActive(true);
+    }
+
+     public void CloseControls()
+    {
+        Time.timeScale = 1;
+        controls.SetActive(false);
     }
 
     public void OnClickExitButton()
@@ -25,7 +43,7 @@ public class UIManager : MonoBehaviour
 
     }
 
-    public void OnClickPauseButton()
+    void OnClickPauseButton()
     {
         pauseMenu.SetActive(true);
         Time.timeScale = 0;
