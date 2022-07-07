@@ -5,9 +5,9 @@ using UnityEngine;
 public class Shuriken : MonoBehaviour
 {
     private Animator animator;
-    private int damage = 50;
+    private int damage = 30;
 
-    void Start()
+    void Awake()
     {
         animator = GetComponent<Animator>();
     }
@@ -24,7 +24,11 @@ public class Shuriken : MonoBehaviour
             other.gameObject.GetComponent<Dummy>().TakeDamage(damage);
             Destroy(this.gameObject);
         }
-        if(other.gameObject.tag == "Platform")
+        // if(other.gameObject.tag == "Platform")
+        // {
+        //     Destroy(this.gameObject);
+        // }
+        if(other.gameObject.tag == "Player")
         {
             Destroy(this.gameObject);
         }
