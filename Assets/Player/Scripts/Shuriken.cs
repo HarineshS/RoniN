@@ -4,18 +4,7 @@ using UnityEngine;
 
 public class Shuriken : MonoBehaviour
 {
-    private Animator animator;
     private int damage = 30;
-
-    void Awake()
-    {
-        animator = GetComponent<Animator>();
-    }
-
-    void Update()
-    {
-       // animator.SetTrigger("Shuriken");
-    }
 
     void OnCollisionEnter2D(Collision2D other)
     {
