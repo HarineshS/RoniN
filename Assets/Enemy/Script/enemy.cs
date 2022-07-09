@@ -20,6 +20,7 @@ public class enemy : MonoBehaviour
     public float AttackRange;
     public float MinDistanceToFollow;
     public Animator EnemyAnimator;
+    public int health;
 
     
     
@@ -28,6 +29,7 @@ public class enemy : MonoBehaviour
    // Start is called before the first frame update
     void Start()
     {
+        health = 100;
         target = GameObject.FindGameObjectWithTag("Player").GetComponent<Transform>();
     }
 
@@ -36,6 +38,11 @@ public class enemy : MonoBehaviour
     {
     
       work();
+      if (health <= 0)
+            {
+                Debug.Log("Died!!");
+                Destroy(gameObject);
+            }
 
         
         
@@ -44,6 +51,7 @@ public class enemy : MonoBehaviour
 
     void work()
     {
+        Debug.Log("working");
          if (!CanSeePlayer(distancetocast))
        {
         patrol();
@@ -60,7 +68,7 @@ public class enemy : MonoBehaviour
     void patrol()
     {
         
-       
+       Debug.Log("patrolling");
         transform.Translate(Vector2.right* speed * Time.deltaTime);
         RaycastHit2D groundinfo = Physics2D.Raycast(grounddetection.position, Vector2.down, distance);
 
@@ -86,6 +94,7 @@ public class enemy : MonoBehaviour
 
     void move()
     {
+        Debug.Log("moving");
         EnemyAnimator.SetBool("isRunning", true);
          EnemyAnimator.SetBool("IsInRange", false);
         transform.Translate(Vector2.right* speed * Time.deltaTime);
@@ -122,6 +131,7 @@ public class enemy : MonoBehaviour
 
     void chaseplayer()
     {
+        Debug.Log("chasing");
         if(Vector2.Distance(transform.position, target.position)  > AttackRange && Vector2.Distance(transform.position, target.position) < MinDistanceToFollow)
         {
             //follow();
@@ -129,7 +139,7 @@ public class enemy : MonoBehaviour
             //transform.position = transform.Translate(Vector2(target.position.x,0),speed*Time.deltaTime);
             transform.position = Vector2.MoveTowards (transform.position, new Vector2(target.position.x, transform.position.y), speed * Time.deltaTime);
 
-            move();
+            //move();
         
             
 
@@ -149,6 +159,12 @@ public class enemy : MonoBehaviour
 
         }
 
+    }
+
+    public void TakeDamage(int damage)
+    {
+        health -= damage;
+        Debug.Log(health);
     }
 
     

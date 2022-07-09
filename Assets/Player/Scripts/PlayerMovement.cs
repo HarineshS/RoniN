@@ -200,7 +200,7 @@ public class PlayerMovement : MonoBehaviour
         Collider2D[] enemiesToDamage = Physics2D.OverlapCircleAll(attackPos.position, attackRange,enemyMask);
         for (int i =0; i< enemiesToDamage.Length; i++)
         {
-            enemiesToDamage[i].GetComponent<Dummy>().TakeDamage(damage);
+            enemiesToDamage[i].GetComponent<enemy>().TakeDamage(damage);
         }
     }
 
@@ -227,7 +227,7 @@ public class PlayerMovement : MonoBehaviour
     void HealthRegeneration()
     {
         currentHealth += healthIncreased;
-        Debug.Log(currentHealth);
+        //Debug.Log(currentHealth);
 
         if (currentHealth > maxHealth)
         {

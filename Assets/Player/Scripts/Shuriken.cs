@@ -10,7 +10,7 @@ public class Shuriken : MonoBehaviour
     {
         if(other.gameObject.tag == "Enemy")
         {
-            other.gameObject.GetComponent<Dummy>().TakeDamage(damage);
+            other.gameObject.GetComponent<enemy>().TakeDamage(damage);
             Destroy(this.gameObject);
         }
         // if(other.gameObject.tag == "Platform")
