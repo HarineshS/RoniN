@@ -11,6 +11,7 @@ public class PlayerMovement : MonoBehaviour
     private float horizontalMovement = 0f;
     private bool isRight;
     private bool isKatana;
+    private bool check;
 
     //shoot
     public Transform shootPoint;
@@ -44,6 +45,7 @@ public class PlayerMovement : MonoBehaviour
 
      void Awake()
     {
+        check = true;
         rb = GetComponent<Rigidbody2D>();
         animator = GetComponent<Animator>();
         fix = 5;
@@ -76,75 +78,87 @@ public class PlayerMovement : MonoBehaviour
     
     void FixedUpdate()
     {
-        KeyboardMovement();  
+        KeyboardMovement(check);  
         shurikenCount.SetCount(currentCount);
     }
-    void KeyboardMovement()
+    void KeyboardMovement(bool check)
     {
-        transform.position += new Vector3(horizontalMovement, 0,0) * speed * Time.deltaTime;
-        if(isRight && horizontalMovement > 0f)
-        {
-            transform.localScale= new Vector2(transform.localScale.x*-1,transform.localScale.y);
-            isRight = false;
-            fix = 5;
-        }
-        else if(!isRight && horizontalMovement < 0f)
-        {
-            transform.localScale= new Vector2(transform.localScale.x*-1,transform.localScale.y);
+       if (check)
+       {
+            transform.position += new Vector3(horizontalMovement, 0,0) * speed * Time.deltaTime;
+            if(isRight && horizontalMovement > 0f)
+            {
+                transform.localScale= new Vector2(transform.localScale.x*-1,transform.localScale.y);
+                isRight = false;
+                fix = 5;
+            }
+            else if(!isRight && horizontalMovement < 0f)
+            {
+                transform.localScale= new Vector2(transform.localScale.x*-1,transform.localScale.y);
 
-            isRight = true;
-            fix = -5;
-        }
+                isRight = true;
+                fix = -5;
+            }
 
-        //Jump
-        if (Input.GetButtonDown("Jump") && Mathf.Abs(rb.velocity.y) < Mathf.Epsilon) 
-        {
-            animator.SetBool("isJumping",true);
-            rb.AddForce(new Vector2(0, jumpForce), ForceMode2D.Impulse);   
-        }
+            //Jump
+            if (Input.GetButtonDown("Jump") && Mathf.Abs(rb.velocity.y) < Mathf.Epsilon) 
+            {
+                animator.SetBool("isJumping",true);
+                rb.AddForce(new Vector2(0, jumpForce), ForceMode2D.Impulse);   
+            }
 
-        //Attack
-        if (Input.GetButtonDown("Fire1"))
-        {
-            isKatana = true;
-            StartCoroutine(Attack(isKatana));
-        }
-        if (Input.GetButtonDown("Fire2"))
-        {
-            isKatana = false;
-            StartCoroutine(Attack(isKatana));
-        }
+            //Attack
+            if (Input.GetButtonDown("Fire1"))
+            {
+                isKatana = true;
+                StartCoroutine(Attack(isKatana));
+            }
+            if (Input.GetButtonDown("Fire2"))
+            {
+                isKatana = false;
+                StartCoroutine(Attack(isKatana));
+            }
 
-        if(Input.anyKey)
-        {
-           ui.CloseControls(); 
+            if(Input.anyKey)
+            {
+            ui.CloseControls(); 
+            }
         }
     }
 
-    void OnCollisionEnter2D(Collision2D other) 
-    {
-        if(other.gameObject.tag == "Platform")
+        void OnCollisionEnter2D(Collision2D other) 
         {
-            animator.SetBool("isJumping",false);
-            StartCoroutine(Health());
-        }
+            if(other.gameObject.tag == "Platform")
+            {
+                animator.SetBool("isJumping",false);
+                StartCoroutine(Health());
+            }
+            if(other.gameObject.tag == "Enemy")
+            {
+                damage = 10;
+                TakeDamage(damage);
+            }
+            if(other.gameObject.tag == "FallEdge")
+            {
+                Debug.Log("You Died!!");
+                StartCoroutine(Death());
+            }
+            if(other.gameObject.tag == "Shuriken")
+            {
+                if(currentCount<9)
+                {
+                    currentCount += 1;
+                }
+            }
+    }
+
+    void OnCollisionStay2D(Collision2D other) 
+    {
         if(other.gameObject.tag == "Enemy")
         {
-            damage = 20;
+            damage = 1;
             TakeDamage(damage);
-        }
-        if(other.gameObject.tag == "FallEdge")
-        {
-            Debug.Log("You Died!!");
-            StartCoroutine(Death());
-        }
-        if(other.gameObject.tag == "Shuriken")
-        {
-            if(currentCount<5)
-            {
-                currentCount += 1;
-            }
-        }
+        }  
     }
 
     IEnumerator Attack(bool isKatana)
@@ -192,6 +206,7 @@ public class PlayerMovement : MonoBehaviour
 
     IEnumerator Death()
     {
+        check = false;
         animator.SetTrigger("death");
         yield return new WaitForSeconds(1.5f);
         Destroy(gameObject);

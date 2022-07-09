@@ -19,6 +19,7 @@ public class ShurikenSpawner : MonoBehaviour
     {
         yield return new WaitForSeconds(spawnInterval);
         GameObject shurikenIns = Instantiate(shuriken, new Vector3(Random.Range(startRange,endRange),0,0), Quaternion.identity);
+        count++;
         StartCoroutine(spawnEnemy(spawnInterval, shuriken));
     } 
 }
