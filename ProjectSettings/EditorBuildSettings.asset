@@ -9,6 +9,9 @@ EditorBuildSettings:
     path: Assets/Scenes/StartScreen.unity
     guid: d43f073c568b8444ab2a0a24f9ce13df
   - enabled: 1
+    path: Assets/Scenes/raj.unity
+    guid: ad5152a22fd35e04e9aa428468010d80
+  - enabled: 1
     path: Assets/Scenes/Level1.unity
     guid: 4d3a6f79d71f6fe4d8523f790657f116
   m_configObjects: {}

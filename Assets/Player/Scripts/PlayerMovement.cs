@@ -150,6 +150,10 @@ public class PlayerMovement : MonoBehaviour
                     currentCount += 1;
                 }
             }
+            if(other.gameObject.tag == "Finish")
+            {
+                    SceneManager.LoadScene(1);
+            }
     }
 
     void OnCollisionStay2D(Collision2D other) 
